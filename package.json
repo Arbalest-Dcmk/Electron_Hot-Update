@@ -1,0 +1,51 @@
+{
+  "name": "electron_hot-update",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Arbalest-Dcmk/Electron_Hot-Update.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Arbalest-Dcmk/Electron_Hot-Update/issues"
+  },
+  "homepage": "https://github.com/Arbalest-Dcmk/Electron_Hot-Update#readme",
+  "devDependencies": {
+    "electron": "^5.0.6",
+    "electron-builder": "^21.1.5"
+  },
+  "dependencies": {
+    "electron-updater": "^4.1.2"
+  },
+  "build":{
+    "appId":"com.arbalest.electron",
+    "productName":"electron自更新测试",
+    "copyright":"Arbalest",
+    "directories":{
+      "output":"dist"
+    },
+    "win":{
+      "target":"nsis",
+      "publish":["github"]
+    },
+    "nsis":{
+      "oneClick":false,
+      "allowElevation":true,
+      "allowToChangeInstallationDirectory":true,
+      "installerIcon":"build/favicon.ico",
+      "uninstallerIcon":"build/favicon.ico",
+      "installerHeaderIcon":"build/favicon.ico",
+      "createDesktopShortcut":true,
+      "createStartMenuShortcut":true
+
+      
+      
+    }
+  }
+}
