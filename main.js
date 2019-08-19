@@ -1,12 +1,26 @@
 const { app, BrowserWindow } = require('electron')
 const { ipcMain } = require('electron')
+const { autoUpdater } = require("electron-updater")
 
-ipcMain.on('ondragstart', (event, filePath) => {
-  event.sender.startDrag({
-    file: filePath
-   // icon: '/path/to/icon.png'
-  })
+autoUpdater.logger = require("electron-log")
+autoUpdater.logger.transports.file.level = "info"
+//autoUpdater.checkForUpdatesAndNotify()//自动更新
+
+//ipcMain主进程与渲染进程通讯
+ipcMain.on('render_sync',(event,arg)=>{//同步
+  console.log(arg)
+  event.returnValue="同步回复的消息"
 })
+
+ipcMain.on('render_async',(event,arg)=>{//异步
+  console.log(arg)
+  event.reply('render_async_reply',"异步回复的消息")
+})
+
+ipcMain.on('startUpdate',(event,arg)=>{//异步
+  autoUpdater.checkForUpdates();
+})
+
 // 保持对window对象的全局引用，如果不这么做的话，当JavaScript对象被
 // 垃圾回收的时候，window对象将会自动的关闭
 let win
@@ -22,7 +36,7 @@ function createWindow () {
   })
 
   // 加载index.html文件
-  win.loadFile('start.html')
+  win.loadURL(`file://${__dirname}/src/checkUpdate.html#v${app.getVersion()}`)
 
   // 打开开发者工具
   win.webContents.openDevTools()
@@ -39,7 +53,10 @@ function createWindow () {
 // Electron 会在初始化后并准备
 // 创建浏览器窗口时，调用这个函数。
 // 部分 API 在 ready 事件触发后才能使用。
-app.on('ready', createWindow)
+app.on('ready',()=>{
+  createWindow()
+  
+} )
 
 // 当全部窗口关闭时退出。
 app.on('window-all-closed', () => {
@@ -57,3 +74,50 @@ app.on('activate', () => {
     createWindow()
   }
 })
+
+
+function sendStatusToWindow(text) {
+  autoUpdater.logger.info(text);
+  win.webContents.send('message', text);
+}
+
+//autoUpdater相关回调
+// app.on('ready', function()  {
+//   autoUpdater.checkForUpdates();
+// });
+// autoUpdater.on('checking-for-update', () => {
+// })
+// autoUpdater.on('update-available', (info) => {
+// })
+// autoUpdater.on('update-not-available', (info) => {
+// })
+// autoUpdater.on('error', (err) => {
+// })
+// autoUpdater.on('download-progress', (progressObj) => {
+// })
+// autoUpdater.on('update-downloaded', (info) => {
+//   autoUpdater.quitAndInstall();  
+// })
+
+
+autoUpdater.on('checking-for-update', () => {
+  sendStatusToWindow('正在检查更新...');
+})
+autoUpdater.on('update-available', (info) => {
+  sendStatusToWindow('获取到更新。');
+})
+autoUpdater.on('update-not-available', (info) => {
+  sendStatusToWindow('未获取到更新.');
+})
+autoUpdater.on('error', (err) => {
+  sendStatusToWindow('检查更新错误 ' + err);
+})
+autoUpdater.on('download-progress', (progressObj) => {
+  let log_message = "下载速度: " + progressObj.bytesPerSecond;
+  log_message = log_message + ' - 已下载 ' + progressObj.percent + '%';
+  log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+  sendStatusToWindow(log_message);
+})
+autoUpdater.on('update-downloaded', (info) => {
+  sendStatusToWindow('更新下载完毕');
+});

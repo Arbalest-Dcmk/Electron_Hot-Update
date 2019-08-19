@@ -1,16 +1,18 @@
 {
   "name": "electron_hot-update",
-  "version": "1.0.1",
+  "version": "1.0.5",
   "description": "",
   "main": "main.js",
+  "release": "build",
   "scripts": {
-    "start": "electron ."
+    "start": "chcp 65001 && electron .",
+    "build":"electron-builder"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Arbalest-Dcmk/Electron_Hot-Update.git"
   },
-  "author": "",
+  "author": "Arbalest-Dcmk",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Arbalest-Dcmk/Electron_Hot-Update/issues"
@@ -21,31 +23,34 @@
     "electron-builder": "^21.1.5"
   },
   "dependencies": {
+    "electron-log": "^3.0.7",
     "electron-updater": "^4.1.2"
   },
-  "build":{
-    "appId":"com.arbalest.electron",
-    "productName":"electron自更新测试",
-    "copyright":"Arbalest",
-    "directories":{
-      "output":"dist"
+  "build": {
+    "appId": "com.arbalest.electron",
+    "productName": "electron自更新测试",
+    "copyright": "Arbalest",
+    "directories": {
+      "output": "dist"
     },
-    "win":{
-      "target":"nsis",
-      "publish":["github"]
+    "win": {
+      "target": "nsis"
     },
-    "nsis":{
-      "oneClick":false,
-      "allowElevation":true,
-      "allowToChangeInstallationDirectory":true,
-      "installerIcon":"build/favicon.ico",
-      "uninstallerIcon":"build/favicon.ico",
-      "installerHeaderIcon":"build/favicon.ico",
-      "createDesktopShortcut":true,
-      "createStartMenuShortcut":true
-
-      
-      
-    }
+    "nsis": {
+      "oneClick": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "build/favicon.ico",
+      "uninstallerIcon": "build/favicon.ico",
+      "installerHeaderIcon": "build/favicon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "publish": [
+      {
+      "provider": "generic",
+      "url":"http://localhost:3000/electron-updater"
+      }
+    ]
   }
 }

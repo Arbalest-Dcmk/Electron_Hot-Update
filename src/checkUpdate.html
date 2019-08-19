@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>更新窗口</title>
+</head>
+<body>
+    <p id="version">v1.0.0</p>
+<p id="msg">ready to update</p>
+
+<script>
+  let version=window.location.hash.substring(1);
+  document.getElementById('version').innerText=version;
+  
+  const {ipcRenderer} =require('electron');
+  ipcRenderer.on('message',(event,arg)=>{
+    console.log(arg)
+      document.getElementById('msg').innerText=arg
+  })
+
+  window.onload=function(){
+    ipcRenderer.send('startUpdate')
+  }
+</script>
+</body>
+</html>
