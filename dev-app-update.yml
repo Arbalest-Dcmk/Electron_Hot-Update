@@ -1,0 +1,8 @@
+version: 1.0.5
+files:
+  - url: electron自更新测试 Setup 1.0.5.exe
+    sha512: YqegPECdeYhtcuFxad0StQvrSbkAw5fUlyuomV8k3LuP2Ds2hoPm9y3JdstGN+Iy2yya22sW/tGriYExxGwnbA==
+    size: 44525473
+path: electron自更新测试 Setup 1.0.5.exe
+sha512: YqegPECdeYhtcuFxad0StQvrSbkAw5fUlyuomV8k3LuP2Ds2hoPm9y3JdstGN+Iy2yya22sW/tGriYExxGwnbA==
+releaseDate: '2019-08-19T09:43:41.359Z'

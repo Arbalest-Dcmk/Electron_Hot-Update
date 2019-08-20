@@ -1,31 +1,35 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, dialog, appUpdater, Menu, MenuItem } = require('electron')
 const { ipcMain } = require('electron')
 const { autoUpdater } = require("electron-updater")
 
-autoUpdater.logger = require("electron-log")
-autoUpdater.logger.transports.file.level = "info"
-//autoUpdater.checkForUpdatesAndNotify()//自动更新
+
 
 //ipcMain主进程与渲染进程通讯
-ipcMain.on('render_sync',(event,arg)=>{//同步
+ipcMain.on('render_sync', (event, arg) => {//同步
   console.log(arg)
-  event.returnValue="同步回复的消息"
+  event.returnValue = "同步回复的消息"
 })
 
-ipcMain.on('render_async',(event,arg)=>{//异步
+ipcMain.on('render_async', (event, arg) => {//异步
   console.log(arg)
-  event.reply('render_async_reply',"异步回复的消息")
+  event.reply('render_async_reply', "异步回复的消息")
 })
 
-ipcMain.on('startUpdate',(event,arg)=>{//异步
-  autoUpdater.checkForUpdates();
+ipcMain.on('startUpdate', (event, arg) => {//异步
+  if(process.env.NODE_ENV=='development'){//本地开发环境
+
+  }else{//非开发环境
+    
+    autoUpdater.checkForUpdates()
+  }
+    
 })
 
 // 保持对window对象的全局引用，如果不这么做的话，当JavaScript对象被
 // 垃圾回收的时候，window对象将会自动的关闭
 let win
 
-function createWindow () {
+function createWindow() {
   // 创建浏览器窗口。
   win = new BrowserWindow({
     width: 800,
@@ -36,7 +40,7 @@ function createWindow () {
   })
 
   // 加载index.html文件
-  win.loadURL(`file://${__dirname}/src/checkUpdate.html#v${app.getVersion()}`)
+  win.loadURL(`file://${__dirname}/src/view/index.html#v${app.getVersion()}`)
 
   // 打开开发者工具
   win.webContents.openDevTools()
@@ -53,10 +57,10 @@ function createWindow () {
 // Electron 会在初始化后并准备
 // 创建浏览器窗口时，调用这个函数。
 // 部分 API 在 ready 事件触发后才能使用。
-app.on('ready',()=>{
+app.on('ready', () => {
   createWindow()
-  
-} )
+
+})
 
 // 当全部窗口关闭时退出。
 app.on('window-all-closed', () => {
@@ -99,12 +103,13 @@ function sendStatusToWindow(text) {
 //   autoUpdater.quitAndInstall();  
 // })
 
-
-autoUpdater.on('checking-for-update', () => {
+//自动更新
+/* autoUpdater.on('checking-for-update', () => {
   sendStatusToWindow('正在检查更新...');
 })
 autoUpdater.on('update-available', (info) => {
   sendStatusToWindow('获取到更新。');
+  
 })
 autoUpdater.on('update-not-available', (info) => {
   sendStatusToWindow('未获取到更新.');
@@ -120,4 +125,44 @@ autoUpdater.on('download-progress', (progressObj) => {
 })
 autoUpdater.on('update-downloaded', (info) => {
   sendStatusToWindow('更新下载完毕');
-});
+  
+}); */
+
+console.log(process.env.NODE_ENV)
+
+
+autoUpdater.autoDownload = false
+
+
+autoUpdater.on('error', (error) => {
+  dialog.showErrorBox('Error: ', error == null ? "unknown" : (error.stack || error).toString())
+})
+
+autoUpdater.on('update-available', () => {//可更新
+  dialog.showMessageBox({
+    type: 'info',
+    title: '有可用更新',
+    message: '有可用新版本，是否现在更新？',
+    buttons: ['确定', '取消']
+  }, (buttonIndex) => {
+    if (buttonIndex === 0) {
+      autoUpdater.downloadUpdate()
+    }
+  })
+})
+
+autoUpdater.on('update-not-available', () => {//无需更新
+  dialog.showMessageBox({
+    title: '无需更新',
+    message: '已是最新版本，无需更新'
+  })
+})
+
+autoUpdater.on('update-downloaded', () => {//完成下载
+  dialog.showMessageBox({
+    title: '安装更新',
+    message: '安装包已下载完毕, 程序将退出并自动安装'
+  }, () => {
+    setImmediate(() => autoUpdater.quitAndInstall())
+  })
+})

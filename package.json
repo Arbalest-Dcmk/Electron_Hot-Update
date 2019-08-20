@@ -1,12 +1,12 @@
 {
   "name": "electron_hot-update",
-  "version": "1.0.5",
+  "version": "1.0.10",
   "description": "",
   "main": "main.js",
   "release": "build",
   "scripts": {
-    "start": "chcp 65001 && electron .",
-    "build":"electron-builder"
+    "start": "chcp 65001 && cross-env NODE_ENV=development electron .",
+    "build": "cross-env NODE_ENV=production electron-builder"
   },
   "repository": {
     "type": "git",
@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Arbalest-Dcmk/Electron_Hot-Update#readme",
   "devDependencies": {
+    "cross-env": "^5.2.0",
     "electron": "^5.0.6",
     "electron-builder": "^21.1.5"
   },
@@ -34,6 +35,7 @@
       "output": "dist"
     },
     "win": {
+      "icon": "build/favicon.ico",
       "target": "nsis"
     },
     "nsis": {
@@ -48,8 +50,8 @@
     },
     "publish": [
       {
-      "provider": "generic",
-      "url":"http://localhost:3000/electron-updater"
+        "provider": "generic",
+        "url": "http://localhost:3000/electron-updater"
       }
     ]
   }
